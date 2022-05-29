@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./style-local.css" rel="stylesheet" />
+    <script src='https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js'></script>
+    <script src='./js/wz_jsgraphics.js'></script>
+
+
+    <title>Axis View</title>
+    <script>
+
+        var symbol = "R_50";
+        var decimals = 4;
+
+        var arr1 = [];
+        var arr2 = [];
+        arr2[0] = 0;
+        var listC = [];
+
+        var eCounter = 0;
+        var oCounter = 0;
+
+        function randomIntFromInterval(min, max) { // min and max included 
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        function AddSpace(id) {
+            var spaces = document.createElement("div");
+            spaces.setAttribute("class", "spaceBox");
+            var targettRow = document.getElementById(id);
+            targettRow.appendChild(spaces);
+        }
+
+        let Idpostions = [];
+
+        function drawLines() {
+            if (Idpostions.length <= 1) {
+                //esperamos
+                console.log("esperamos");
+            } else if (Idpostions.length > 1) {
+                var ls1 = Idpostions[Idpostions.length - 2];
+                var ls2 = Idpostions[Idpostions.length - 1];
+                console.log("ls1: " + ls1 + " ls2: " + ls2);
+
+                var point1 = document.getElementById(ls1);
+              //  var line = document.getElementById("myLine");
+                var line = document.createElement("div");
+                line.setAttribute("class","myLine");
+
+                var offsets1 = document.getElementById(ls1).getBoundingClientRect();
+                var x1 = offsets1.left;
+                var y1 = offsets1.top;
+
+
+
+                var offsets2 = document.getElementById(ls2).getBoundingClientRect();
+                var x2 = offsets2.left;
+                var y2 = offsets2.top;
+
+                // var a = x1 - x2;
+                // var b = y1 - y2;
+                // var length = Math.sqrt(a * a + b * b);
+                // var angleDeg = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+                // var pointWidth = point1.clientWidth / 2;
+                // var pointHeight = point1.clientWidth / 2;
+
+                // line.style.width = length + 'px';
+                // line.style.left = (x1 + pointWidth) + 'px';
+                // line.style.top = (y1 + pointHeight) + 'px';
+                // line.style.transform = "rotate(" + angleDeg + "deg)";
+
+
+                // var jg = new jsGraphics("SubContainer");
+
+                // jg.setColor("#ffffff"); // red
+                // jg.setStroke(2);
+                // //jg.setStroke(Stroke.DOTTED);
+                // jg.drawLine(x1, y1, x2, y2); // co-ordinates related to "myCanvas"
+                // jg.paint();
+
+            }
+
+        }
+
+        function AddEven(id, digito, contador) {
+            var divContorn = document.createElement("div");
+            divContorn.setAttribute("class", "evenContorn");
+            var evenDigit = document.createElement("span")
+            evenDigit.setAttribute("id", "even" + contador);
+            evenDigit.setAttribute("class", "evenDigit");
+
+            var Edigit = document.createTextNode(digito);
+            var targetRow = document.getElementById(id);
+
+            evenDigit.appendChild(Edigit);
+            divContorn.appendChild(evenDigit);
+            targetRow.appendChild(divContorn);
+            Idpostions.push("even" + contador);
+            console.log(Idpostions);
+            drawLines();
+        }
+
+        function AddOdd(id, digito, contador) {
+            var divContorn = document.createElement("div");
+            divContorn.setAttribute("class", "oddContorn");
+            var oddDigit = document.createElement("span")
+            oddDigit.setAttribute("id", "odd" + contador);
+            oddDigit.setAttribute("class", "oddDigit");
+
+            var Odigit = document.createTextNode(digito);
+            var targetRow = document.getElementById(id);
+
+            oddDigit.appendChild(Odigit);
+            divContorn.appendChild(oddDigit);
+            targetRow.appendChild(divContorn);
+            Idpostions.push("odd" + contador);
+            console.log(Idpostions);
+            drawLines();
+        }
+
+        //========================================== Ontick
+
+
+        var ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+
+        ws.onopen = function (evt) {
+            ws.send(JSON.stringify({ ticks: symbol }));
+        };
+
+        var contador = 0;
+
+        var addOGroup = false;
+        var addEGroup = false;
+
+        ws.onmessage = function (msg) {
+            contador++;
+            console.log("contador: " + contador);
+            var data = JSON.parse(msg.data);
+
+            var digit = Number(data.tick.quote).toFixed(decimals).slice(-1);
+            //  console.log(digit); 
+            if (digit == 8) {
+                AddEven("row8", digit, contador);
+            } else {
+                AddSpace("row8");
+            }
+            if (digit == 6) {
+                AddEven("row6", digit, contador);
+            } else {
+                AddSpace("row6");
+            }
+            if (digit == 4) {
+                AddEven("row4", digit, contador);
+            } else {
+                AddSpace("row4");
+            }
+            if (digit == 2) {
+                AddEven("row2", digit, contador);
+            } else {
+                AddSpace("row2");
+            }
+            if (digit == 0) {
+                // console.log("Insertar en row" + digit);
+                AddEven("row0", digit, contador);
+            } else {
+                AddSpace("row0");
+            }
+            if (digit == 1) {
+                AddOdd("row1", digit, contador);
+            } else {
+                AddSpace("row1");
+            }
+            if (digit == 3) {
+                AddOdd("row3", digit, contador);
+            } else {
+                AddSpace("row3");
+            }
+            if (digit == 5) {
+                AddOdd("row5", digit, contador);
+            } else {
+                AddSpace("row5");
+            }
+            if (digit == 7) {
+                AddOdd("row7", digit, contador);
+            } else {
+                AddSpace("row7");
+            }
+            if (digit == 9) {
+                AddOdd("row9", digit, contador);
+
+            } else {
+                AddSpace("row9");
+            }
+
+            //TODO: necesitas obtener la posicion de los ultimos 2 elementos 
+            //TODO: y dibujar una linea entre esos
+            //TODO: puedes reducir el tamaño de los estilos para ver mas digitos .)
+            //TODO: Fusionar los 2 analizers en uno
+
+
+            // for (let index = 0; index < EOrows.length; index++) {
+
+            //     var tartgetId = "row" + digit;
+            //     if (tartgetId === EOrows[index]) {
+
+            //         if (digit % 2 === 0) {
+            //             //par
+            //             console.log("Insertar Par en row" + digit);
+            //             AddEven(tartgetId, digit, contador);
+
+            //         } else {
+            //             //par
+            //             console.log("Insertar Impar en row" + digit);
+            //             AddOdd(tartgetId, digit, contador);
+            //         }
+            //     } else {
+            //         //no importa
+            //         console.log("no insertar en row" + index);
+            //         AddSpace(tartgetId);
+            //     }
+            // }
+
+
+            if (digit % 2 === 0) {
+                var text = "O";
+                if (oCounter > 0) {
+                    arr1.push(oCounter + text);
+                    //AñadirGruposE(digit);
+                    addEGroup = true
+
+
+
+                }
+                oCounter = 0;
+                eCounter += 1;
+
+
+
+            } else {
+                var text = "E";
+                if (eCounter > 0) {
+                    arr1.push(eCounter + text);
+                    // AñadirGruposO(digit);
+                    addOGroup = true;
+
+
+                }
+                eCounter = 0;
+                oCounter += 1;
+            }
+            if (eCounter > 0) {
+                var text = "E";
+                arr2[0] = eCounter + text;
+                if (addEGroup) {
+                    addEGroup = false;
+                } else {
+                    // AñadirDigitsE(digit);
+
+
+                }
+
+                // console.log("Ecounter mayor a cero");
+            }
+            if (oCounter > 0) {
+                var text = "O";
+                arr2[0] = oCounter + text;
+                if (addOGroup) {
+                    addOGroup = false;
+                } else {
+                    //AñadirDigitsO(digit);
+
+
+                }
+
+                // console.log("Ocounter mayor a cero");
+            }
+            listC = arr1 + "," + arr2;
+            console.log("Groups: " + listC);
+        };
+        // function AñadirGruposE(digito) {
+
+        //     var divCell = document.createElement("div");
+        //     divCell.setAttribute("class", "evenCell");
+        //     var divContorn = document.createElement("div");
+        //     divContorn.setAttribute("class", "evenContorn");
+        //     var evenDigit = document.createElement("span")
+        //     evenDigit.setAttribute("id", "evenDigit");
+
+        //     var spanSep = document.createElement("span");
+        //     spanSep.setAttribute("class", "VerticalDivisor");
+        //     var SepText = document.createTextNode("/\\");
+
+        //     var Edigit = document.createTextNode(digito);
+
+
+        //     spanSep.appendChild(SepText);
+        //     evenDigit.appendChild(Edigit);
+
+        //     divContorn.appendChild(evenDigit);
+        //     divCell.appendChild(divContorn);
+        //     divCell.appendChild(spanSep);
+
+
+        //     var baul = document.getElementById("upContainer");
+        //     baul.appendChild(divCell);
+        // }
+
+        // function AñadirDigitsE(digito) {
+        //     var divContorn = document.createElement("div");
+        //     divContorn.setAttribute("class", "evenContorn");
+        //     var evenDigit = document.createElement("span")
+        //     evenDigit.setAttribute("id", "evenDigit");
+
+
+        //     var Edigit = document.createTextNode(digito);
+
+        //     spanSep.appendChild(SepText);
+        //     evenDigit.appendChild(Edigit);
+
+        //     divContorn.appendChild(evenDigit);
+
+        //     var digitoItem = document.getElementsByClassName("evenCell");
+        //     var n;
+        //     for (n = 0; n < digitoItem.length; ++n) {
+
+        //         digitoItem[n].insertBefore(spanSep, digitoItem[n].firstChild);
+        //         digitoItem[n].insertBefore(divContorn, digitoItem[n].firstChild);
+        //     }
+        // }
+
+        // function AñadirGruposO(digito) {
+        //     var divCell = document.createElement("div");
+        //     divCell.setAttribute("class", "oddCell");
+        //     var divContorn = document.createElement("div");
+        //     divContorn.setAttribute("class", "oddContorn");
+        //     var oddDigit = document.createElement("span")
+        //     oddDigit.setAttribute("id", "oddDigit");
+
+        //     var spanSep = document.createElement("span");
+        //     spanSep.setAttribute("class", "VerticalDivisor");
+        //     var SepText = document.createTextNode("\\/");
+
+        //     var Odigit = document.createTextNode(digito);
+
+
+        //     spanSep.appendChild(SepText);
+        //     oddDigit.appendChild(Odigit);
+
+        //     divContorn.appendChild(oddDigit);
+        //     divCell.appendChild(spanSep);
+        //     divCell.appendChild(divContorn);
+
+
+
+        //     var baul = document.getElementById("downContainer");
+        //     baul.appendChild(divCell);
+
+        // }
+
+        // function AñadirDigitsO(digito) {
+        //     var divContorn = document.createElement("div");
+        //     divContorn.setAttribute("class", "oddContorn");
+        //     var oddDigit = document.createElement("span")
+        //     oddDigit.setAttribute("id", "oddDigit");
+
+        //     var spanSep = document.createElement("span");
+        //     spanSep.setAttribute("class", "VerticalDivisor");
+        //     var SepText = document.createTextNode("|");
+
+        //     var Odigit = document.createTextNode(digito);
+
+
+        //     spanSep.appendChild(SepText);
+        //     oddDigit.appendChild(Odigit);
+
+        //     divContorn.appendChild(oddDigit);
+
+
+        //     var digitoItemO = document.getElementsByClassName("oddCell");
+        //     var n;
+        //     for (n = 0; n < digitoItemO.length; ++n) {
+        //         //  digitoItem[n].value='100';
+        //         digitoItemO[n].appendChild(spanSep);
+        //         digitoItemO[n].appendChild(divContorn);
+        //     }
+        // }
+
+
+
+
+
+
+    </script>
+
+</head>
+
+<body tabindex="0">
+
+    <div id="controls">
+        <input type="button" value="add par"
+            onclick="AddEven(`row${randomIntFromInterval(0,9)}`,randomIntFromInterval(0,9),1)" />
+    </div>
+    <div id="MenuBar">
+
+
+
+    </div>
+    <div id="GroupsBar">
+        <!-- <span id="digitGroups"></span> -->
+    </div>
+    <div id="container" class="zoomable">
+        <div id="SubContainer">
+            <div id="upContainer">
+
+                <div id="row8" class="eColum">
+
+
+                </div>
+                <div id="row6" class="eColum">
+
+                </div>
+                <div id="row4" class="eColum">
+
+                </div>
+                <div id="row2" class="eColum">
+
+                </div>
+                <div id="row0" class="eColum">
+
+                </div>
+
+
+            </div>
+
+            <!-- <hr > -->
+            <div id="Separator"></div>
+
+            <div id="downContainer">
+                <div id="row1" class="oColum">
+
+                </div>
+                <div id="row3" class="oColum">
+
+                </div>
+                <div id="row5" class="oColum">
+
+                </div>
+                <div id="row7" class="oColum">
+
+                </div>
+                <div id="row9" class="oColum">
+
+                    </di </div>
+                </div> 
+                <!-- <script src="./js/panzoom.js"></script>
+    <div id="elementH"></div>-->
+                <script>
+                    var area = document.querySelector('.zoomable')
+                    panzoom(area)
+
+
+                </script>
+</body>
+
+</html>
