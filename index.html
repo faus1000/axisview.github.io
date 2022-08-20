@@ -1,0 +1,288 @@
+<head>
+    <title>AusCount - Di</title>
+    <link href="./style-di.css" rel="stylesheet" />
+    <script src="./main.js"></script>
+</head>
+
+
+
+<body>
+
+    <div id="container" class="zoomable">
+        <div id="SubContainer">
+            <div id="upContainer">
+
+                <div id="row8" class="eColum">
+
+                  
+                </div>
+                <div id="row6" class="eColum">
+
+                </div>
+                <div id="row4" class="eColum">
+                 
+
+                </div>
+                <div id="row2" class="eColum">
+                    
+                </div>
+                <div id="row0" class="eColum">
+
+                </div>
+
+
+            </div>
+
+            <!-- <hr > -->
+            <div id="Separator"></div>
+
+            <div id="downContainer">
+                <div id="row1" class="oColum">
+                    
+                </div>
+                <div id="row3" class="oColum">
+
+                </div>
+                <div id="row5" class="oColum">
+
+                </div>
+                <div id="row7" class="oColum">
+
+                </div>
+                <div id="row9" class="oColum">
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //var out = document.getElementById("out");
+        var out = document.body;
+        var c = 0;
+
+        var symbol = "R_50";
+        var decimals = 4;
+
+        var arr1 = [];
+        var arr2 = [];
+        arr2[0] = 0;
+        var listC = [];
+
+        var eCounter = 0;
+        var oCounter = 0;
+
+        var co0 = 0;
+        var co1 = 0;
+        var co2 = 0;
+        var co3 = 0;
+        var co4 = 0;
+        var co5 = 0;
+        var co6 = 0;
+        var co7 = 0;
+        var co8 = 0;
+        var co9 = 0;
+
+
+        var ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+
+        ws.onopen = function (evt) {
+            ws.send(JSON.stringify({ ticks:symbol }));
+        };
+        var contador = 0;
+
+        ws.onmessage = function (msg) {
+            var data = JSON.parse(msg.data);
+            var digit = Number(data.tick.quote).toFixed(decimals).slice(-1);
+
+            var isScrolledToBottom = out.scrollWidth - out.clientWidth <= out.scrollLeft + 1;
+
+            //  console.log(digit); 
+            if (digit == 8) {
+                AddEven("row8", "5", contador, co8, digit);
+                co8 = 0;
+            } else {
+                AddSpace("row8");
+                co8++
+            }
+            if (digit == 6) {
+                AddEven("row6", "4", contador, co6, digit);
+                co6 = 0;
+            } else {
+                AddSpace("row6");
+                co6++;
+            }
+            if (digit == 4) {
+                AddEven("row4", "3", contador, co4, digit);
+                co4 = 0;
+            } else {
+                AddSpace("row4");
+                co4++;
+            }
+            if (digit == 2) {
+                AddEven("row2", "2", contador, co2, digit);
+                co2 = 0;
+            } else {
+                AddSpace("row2");
+                co2++;
+            }
+            if (digit == 0) {
+                // console.log("Insertar en row" + digit);
+                AddEven("row0", "1", contador, co0, digit);
+                co0 = 0;
+            } else {
+                AddSpace("row0");
+                co0++;
+            }
+            if (digit == 1) {
+                AddOdd("row1", "1", contador, co1, digit);
+                co1 = 0;
+            } else {
+                AddSpace("row1");
+                co1++;
+            }
+            if (digit == 3) {
+                AddOdd("row3", "2", contador, co3, digit);
+                co3 = 0;
+            } else {
+                AddSpace("row3");
+                co3++;
+            }
+            if (digit == 5) {
+                AddOdd("row5", "3", contador, co5, digit);
+                co5 = 0;
+            } else {
+                AddSpace("row5");
+                co5++;
+            }
+            if (digit == 7) {
+                AddOdd("row7", "4", contador, co7, digit);
+                co7 = 0;
+            } else {
+                AddSpace("row7");
+                co7++;
+            }
+            if (digit == 9) {
+                AddOdd("row9", "5", contador, co9, digit);
+                co9 = 0;
+
+            } else {
+                AddSpace("row9");
+                co9++;
+            }
+
+
+
+
+            function AddSpace(id) {
+                var spaces = document.createElement("div");
+                spaces.setAttribute("class", "spaceBox");
+                var targettRow = document.getElementById(id);
+                targettRow.appendChild(spaces);
+            }
+            function AddEven(id, digitoV, contador, AUCounter, digit) {
+                var digitsContainer = document.createElement("div");
+                digitsContainer.setAttribute("class","digitsContainer");
+
+                var divContorn = document.createElement("div");
+                divContorn.setAttribute("class", "evenContorn");
+
+                var auContorn = document.createElement("div");
+                auContorn.setAttribute("class", "EAuContorn");
+
+                var evenDigit = document.createElement("span")
+                evenDigit.setAttribute("id", "even" + contador);
+                evenDigit.setAttribute("class", "evenDigit");
+
+                var eADigit = document.createElement("span")
+                eADigit.setAttribute("id", "eA" + contador);
+                eADigit.setAttribute("class", "eADigit");
+
+                //  var Edigit = document.createTextNode(digitoV + "e");
+                //  var Edigit =  document.createTextNode(`${digit} - ${AUCounter} - ${digitoV}e`);
+                var Edigit = document.createTextNode(`${digit}`);
+              var deADigit = document.createTextNode(`${AUCounter}`);
+
+                
+            var targetRow = document.getElementById(id);
+                evenDigit.appendChild(Edigit);
+                divContorn.appendChild(evenDigit);
+                digitsContainer.appendChild(divContorn); 
+
+                 eADigit.appendChild(deADigit);
+                 auContorn.appendChild(eADigit);
+                digitsContainer.appendChild(auContorn);
+                targetRow.appendChild(digitsContainer);
+
+
+            }
+
+            function AddOdd(id, digitoV, contador, AUCounter, digit) {
+                var digitsContainer = document.createElement("div");
+                digitsContainer.setAttribute("class","digitsContainer");
+
+                var divContorn = document.createElement("div");
+                divContorn.setAttribute("class", "oddContorn");
+
+                var auContorn = document.createElement("div");
+                auContorn.setAttribute("class", "OAuContorn");
+
+                var oddDigit = document.createElement("span")
+                oddDigit.setAttribute("id", "odd" + contador);
+                oddDigit.setAttribute("class", "oddDigit");
+
+                var oADigit = document.createElement("span")
+                oADigit.setAttribute("id", "oA" + contador);
+                oADigit.setAttribute("class", "oADigit");
+
+
+                //var Odigit = document.createTextNode(digitoV + "o");
+                //var Odigit = document.createTextNode(`${digit} - ${AUCounter} - ${digitoV}o`);
+                var Odigit = document.createTextNode(`${digit}`);
+                var doADigit = document.createTextNode(`${AUCounter}`);
+
+                var targetRow = document.getElementById(id); 
+                oddDigit.appendChild(Odigit);
+                oADigit.appendChild(doADigit);
+                auContorn.appendChild(oADigit);
+                divContorn.appendChild(oddDigit);
+                digitsContainer.appendChild(divContorn);
+                digitsContainer.appendChild(auContorn);
+                targetRow.appendChild(digitsContainer);
+
+            }
+
+            if (isScrolledToBottom) {
+                out.scrollLeft = out.scrollWidth - out.clientWidth;
+               // console.log("scroll desplazado al final");
+            } else {
+                //out.scrollLeft = out.scrollWidth - out.clientWidth;
+              //  console.log("Se movio el scroll del borde");
+            }
+
+
+
+        } 
+    </script>
+</body>
+
+<style>
+    body {
+        overflow: hidden;
+        overflow-x: scroll;
+    }
+
+    #out {
+        position: absolute;
+
+        display: inline-flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        /* overflow-y: hidden;
+        overflow-x: scroll;
+        height: 100%;
+        width: 100%; */
+        background-color: dodgerblue;
+    }
+</style>
